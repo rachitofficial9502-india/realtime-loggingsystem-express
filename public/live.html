@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Logs</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Live Logs</h1>
+    <div id="logsBox">
+      <p class="placeholder">Waiting for logs...</p>
+    </div>
+    <a href="index.html" class="btn">← Back to Home</a>
+  </div>
+  <script>
+      const logsBox = document.getElementById("logsBox")
+
+      // Connect to SSE endpoint
+      const eventSource = new EventSource("/stream-logs")
+
+      eventSource.onmessage = (event) => {
+        // Remove placeholder text on first message
+        const placeholder = document.querySelector(".placeholder")
+        if (placeholder) placeholder.remove()
+
+        const p = document.createElement("p")
+        p.textContent = event.data
+        logsBox.appendChild(p)
+
+        // Auto scroll to bottom
+        logsBox.scrollTop = logsBox.scrollHeight
+      }
+
+      eventSource.onerror = () => {
+        console.log("SSE connection error. Retrying...")
+      }
+  </script>
+
+</body>
+</html>
